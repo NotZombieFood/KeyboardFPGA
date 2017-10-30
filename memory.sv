@@ -5,7 +5,7 @@ module memory
 )(
   input clk,
   input rst,
-  input  [4:0]  wr_addr,
+  input  [3:0]  wr_addr,
   input         wr_en,
   input en_2,
   input  [31:0] wr_data,
@@ -20,7 +20,7 @@ module memory
 	 always_ff @ (posedge clk) begin
       if (rst)
 			for (i = 0; i < NUM_REGS; i = i + 1)
-				rf[i] <= 9'h 150;
+				rf[i] <= 9'h 120;
 		else  if (wr_en & en_2)
         rf[wr_addr] <= wr_data;
 		

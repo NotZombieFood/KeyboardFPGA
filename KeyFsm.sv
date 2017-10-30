@@ -61,12 +61,46 @@ always_comb begin
 			end else begin
 				next_state = waitKeyMayus;
 			end
-			// shift cuando vienes de uppercase
-			waitKeyShiftLower:
+			writeKeyMayus:
 				next_state = waitKeyMayus;
-			//shift cuando vienes de lower case
-			waitKeyShiftUpper:
+			// shift cuando vienes de uppercase
+			waitKeyShiftLower: if(doneKey & keyData== 8'h58) begin
+				//pico a mayus
 				next_state = waitKey;
+			end 
+			else if (doneKey & keyData== 8'h12) begin  
+				//pico a shift
+				next_state = waitKeyMayus;
+			end
+			else if (doneKey & keyData== 8'h58) begin 
+				//pico a shift
+				next_state = waitKeyMayus;
+			end else if (doneKey) begin
+				next_state = writeKeyShiftLower;
+			end else begin
+				next_state = waitKeyShiftLower;
+			end
+			//shift cuando vienes de lower case
+			waitKeyShiftUpper: if(doneKey & keyData== 8'h58) begin
+				//pico a mayus
+				next_state = waitKeyMayus;
+			end 
+			else if (doneKey & keyData== 8'h12) begin  
+				//pico a shift
+				next_state = waitKey;
+			end
+			else if (doneKey & keyData== 8'h58) begin 
+				//pico a shift
+				next_state = waitKey;
+			end else if (doneKey) begin
+				next_state = writeKeyShiftUpper;
+			end else begin
+				next_state = waitKeyShiftUpper;
+			end
+			writeKeyShiftUpper:
+				next_state = waitKey;
+			writeKeyShiftLower:
+				next_state = waitKeyMayus;
 			default: next_state = init;
 		endcase
 end
@@ -99,7 +133,7 @@ always_comb begin
 				upper = 0;
 			end
 			waitKeyShiftUpper: begin
-				doneLCD= 1;
+				doneLCD= 0;
 				upper = 1;
 			end
 			writeKeyShiftLower: begin

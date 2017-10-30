@@ -18,8 +18,8 @@ logic [5:0] rd_address;
 logic [5:0] rd_address_1;
 logic [5:0] rd_address_2;
 logic en_mem;
-logic [4:0] wr_addr_1;
-logic [4:0] wr_addr_2;
+logic [3:0] wr_addr_1;
+logic [3:0] wr_addr_2;
 logic [31:0] wr_data;
 logic [31:0] teclado;
 logic en_2;
@@ -80,7 +80,7 @@ always_ff @ (posedge clk) begin
 		borrar <= 0;
 	end
 	else if (doneLCD) begin
-	if (teclado == 9'h 0C0 ) begin	//enter
+	if (teclado == 9'h 108 ) begin	//enter
 			en_mem <= ~en_mem;
 			wr_data <= wr_data; 
 			wr_addr_1 <= wr_addr_1;
@@ -88,22 +88,13 @@ always_ff @ (posedge clk) begin
 			en_2 <= 0;
 			borrar <= 0;
 		end
-		else if (teclado == 9'h 108 ) begin  //Borrar
+		else if (teclado == 9'h 109 ) begin  //Borrar
 			en_mem <= en_mem;
 			wr_data <= 9'h 120;
 			en_2 <= 1;
 			wr_addr_1 <= wr_addr_1;
 			wr_addr_2 <= wr_addr_2;
 			borrar <= 1;
-		/*	if (~en_mem) begin
-				wr_addr_1 <= wr_addr_1 - 1;
-				wr_addr_2 <= wr_addr_2;
-			end
-			else begin
-				wr_addr_1 <= wr_addr_1;
-				wr_addr_2 <= wr_addr_2 - 1;
-			end
-			*/
 		end
 		else begin //Otra tecla
 			en_mem <= en_mem;
@@ -121,7 +112,7 @@ always_ff @ (posedge clk) begin
 		end
 	end
 	else begin
-		en_mem <= 0;
+		en_mem <= en_mem;
 		wr_data <= wr_data;
 		wr_addr_1 <= wr_addr_1;
 		wr_addr_2 <= wr_addr_2;
