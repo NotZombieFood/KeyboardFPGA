@@ -1,10 +1,10 @@
 module KeyFsm (
 	input clk, rst, doneKey,
-	input [9:0] keyData,
+	input [7:0] keyData,
 	output logic doneLCD, upper
 );
 
-enum 	{init, waitKey, waitKeyMayus, waitKeyShiftUpper, waitKeyShiftLower} state, next_state;
+enum 	{init, waitKey, waitKeyMayus, waitKeyShiftUpper, waitKeyShiftLower, writeKey, writeKeyMayus, writeKeyShiftUpper, writeKeyShiftLower} state, next_state;
 
 // 8'h58 is caps, 8'h12  y 8'h59 es shift  8'h5A es enter y 8'h66 es backspace
 
@@ -37,6 +37,13 @@ always_comb begin
 			else if (doneKey & keyData== 8'h58) begin  
 				next_state = waitKeyShiftUpper;
 			end
+			else if (doneKey) begin
+				next_state = writeKey;
+			end else begin
+				next_state = waitKey;
+			end
+			writeKey:
+				next_state = waitKey;
 			//estando en uppercase
 			waitKeyMayus: if(doneKey & keyData== 8'h58) begin
 				//pico a mayus
@@ -49,6 +56,10 @@ always_comb begin
 			else if (doneKey & keyData== 8'h58) begin 
 				//pico a shift
 				next_state = waitKeyShiftLower;
+			end else if (doneKey) begin
+				next_state = writeKeyMayus;
+			end else begin
+				next_state = waitKeyMayus;
 			end
 			// shift cuando vienes de uppercase
 			waitKeyShiftLower:
@@ -68,19 +79,35 @@ always_comb begin
 				upper = 0;
 			end
 			waitKey: begin
-				doneLCD= 1;
+				doneLCD= 0;
 				upper = 0;
 			end
+			writeKey: begin
+				doneLCD = 1;
+				upper = 0;
+			end
+			writeKeyMayus: begin
+				doneLCD = 1;
+				upper = 1;
+			end
 			waitKeyMayus: begin
-				doneLCD= 1;
+				doneLCD= 0;
 				upper = 1;
 			end
 			waitKeyShiftLower: begin
-				doneLCD= 1;
+				doneLCD= 0;
 				upper = 0;
 			end
 			waitKeyShiftUpper: begin
 				doneLCD= 1;
+				upper = 1;
+			end
+			writeKeyShiftLower: begin
+				doneLCD = 1;
+				upper = 0;
+			end
+			writeKeyShiftUpper: begin
+				doneLCD = 1;
 				upper = 1;
 			end
 			default: begin
